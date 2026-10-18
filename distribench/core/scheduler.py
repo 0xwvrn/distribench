@@ -70,7 +70,7 @@ class ClusterScheduler:
         for k in worker_keys: 
             raw = self.redis.get(k)
             if raw: workers.append(WorkerHeartbeat.model_validate_json(raw))
-            return workers
+        return workers
         
     def get_cluster_stats(self) -> Dict[str, Any]:
         queued_count = self.redis.zcard(config.REDIS_QUEUE_KEY)
