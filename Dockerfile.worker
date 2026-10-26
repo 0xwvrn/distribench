@@ -1,0 +1,22 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    procps \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY distribench/ ./distribench/
+
+RUN mkdir -p /shared/logs
+
+ENV PYTHONUNBUFFERED=1
+ENV SHARED_DIR=/shared
+ENV REDIS_HOST=redis
+ENV REDIS_PORT=6379
+
+CMD ["python", "-m", "distribench.worker.worker"]

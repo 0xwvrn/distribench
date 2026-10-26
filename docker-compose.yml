@@ -1,0 +1,48 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    networks:
+      - distribench-net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  worker-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      - REDIS_HOST=redis
+      - SHARED_DIR=/shared
+    volumes:
+      - ./data/shared:/shared
+    networks:
+      - distribench-net
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: on-failure
+
+  worker-2:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      - REDIS_HOST=redis
+      - SHARED_DIR=/shared
+    volumes:
+      - ./data/shared:/shared
+    networks:
+      - distribench-net
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: on-failure
+
+networks:
+  distribench-net:
+    driver: bridge

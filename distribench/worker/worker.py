@@ -74,16 +74,15 @@ class ClusterWorker:
                 print(f"\nTask failed")
                 traceback.print_exc()
 
-                task.retry_count += 1
-                if task.retry_count <= task.max_retries:
-                    print(f"\n[Worker] Re-queueing task for retry ({task.retry_count}/{task.max_retries})...")
-                    task.status = TaskStatus.PENDING
-                    self.scheduler.submit_task(task)
+                if task.retry_count < task.max_retries:
+                    delay = self.scheduler.schedule_retry(task, base_backoff=2.0)
+                    print(f"\n[Worker] Task failed. Scheduled retry {task.retry_count}/{task.max_retries} with {delay:.1f}s exponential backoff...")
                 else:
                     print(f"\n[Worker] Max retries reached ({task.max_retries}). Marking as FAILED.")
                     task.status = TaskStatus.FAILED
                     task.error_message = f"{type(e).__name__}: {str(e)}"
                     task.completed_at = datetime.now(timezone.utc)
+                    self.scheduler.update_task(task)
             finally:
                 sys.stdout = old_stdout
                 sys.stderr = old_stderr
