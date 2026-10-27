@@ -15,3 +15,4 @@ data/shared/logs/*
 
 # Environment secrets
 .env
+PROJECT_LOG.md

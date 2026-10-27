@@ -103,7 +103,7 @@ class ClusterScheduler:
         return {
             "queued_tasks": queued_count,
             "active_workers": len(workers),
-            "workers": [w.model_dump() for w in workers],
+            "workers": [w.model_dump(mode="json") for w in workers],
             "task_counts": tasks_by_status
         }
 
