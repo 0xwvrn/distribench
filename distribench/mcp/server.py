@@ -15,7 +15,7 @@ scheduler = ClusterScheduler()
 triage_engine = ErrorTriageEngine(scheduler)
 
 @mcp.tool()
-def query_cluster_capacity() -> Dict[str, Any]:
+def query_cluster_capacity() -> dict:
     stats = scheduler.get_cluster_stats()
     return {
         "status": "Healthy" if stats["active_workers"] > 0 else "Degraded No Workers",
@@ -28,10 +28,10 @@ def query_cluster_capacity() -> Dict[str, Any]:
 @mcp.tool()
 def dispatch_workload(
     task_type: str,
-    payload: Dict[str, Any],
+    payload: dict,
     priority: int = 5,
     timeout_s: int = 60,
-) -> Dict[str, Any]:
+) -> dict:
     priority = max(1, min(10, priority))
     task = Task(
         task_type=task_type,
@@ -50,9 +50,9 @@ def dispatch_workload(
 @mcp.tool()
 def dispatch_batch(
     name: str,
-    tasks: List[Dict[str, Any]],
+    tasks: list,
     priority: int = 5
-) -> Dict[str, Any]:
+) -> dict:
     task_objs = [
         Task(
             task_type=t["task_type"],
@@ -70,7 +70,7 @@ def dispatch_batch(
     }
 
 @mcp.tool()
-def tail_execution_logs(task_id: str, lines: int = 50) -> Dict[str, Any]:
+def tail_execution_logs(task_id: str, lines: int = 50) -> dict:
     task = scheduler.get_task(task_id)
     if not task: return {"error": f"{task_id} not found"}
 
@@ -93,7 +93,7 @@ def tail_execution_logs(task_id: str, lines: int = 50) -> Dict[str, Any]:
     }
 
 @mcp.tool()
-def triage_failed_task(task_id: str) -> Dict[str, Any]:
+def triage_failed_task(task_id: str) -> dict:
     task = scheduler.get_task(task_id)
     if not task: return {"error": f"Task '{task_id}' not found."}
     report = triage_engine.triage_task(task_id)

@@ -2,6 +2,7 @@ import sys
 import time
 import json
 import click
+
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
@@ -110,7 +111,6 @@ def logs(task_id: str, lines: int):
 @cli.command()
 @click.argument("task_id")
 def triage(task_id: str):
-    """Execute AI error triage on a failed task."""
     task = scheduler.get_task(task_id)
     if not task:
         console.print(f"[bold red]Task '{task_id}' not found.[/]")
@@ -130,7 +130,6 @@ def triage(task_id: str):
 
 @cli.command()
 def demo():
-    """Run an automated end-to-end cluster demonstration."""
     console.print(Panel(
         "[bold cyan]Starting DistriBench-MCP End-to-End Cluster Showcase[/]\n"
         "1. Dispatch high and normal priority compute tasks\n"
@@ -169,5 +168,11 @@ def demo():
         title=f"[bold red]AI Diagnostic Triage Card — Task {t2.id}[/]",
         border_style="red"
     ))
+
+@cli.command()
+def agent():
+    from distribench.cli.agent import run_tui
+    run_tui()
+
 if __name__ == "__main__":
     cli()

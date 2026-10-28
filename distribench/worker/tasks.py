@@ -5,7 +5,7 @@ from typing import Dict, Any
 
 def compute_matrix(payload: Dict[str, Any]) -> Dict[str, Any]:    
     """Simulates CPU-bound numerical matrix computation."""
-    size = payload.get("size", 150)  # 150x150 is ~0.5s-1.5s in pure Python
+    size = payload.get("size") or payload.get("matrix_size") or 150
     seed = payload.get("seed", 42)
     rng = random.Random(seed)
     print(f"[Task] Generating two {size}x{size} matrices...")
